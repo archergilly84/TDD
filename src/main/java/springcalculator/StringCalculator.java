@@ -1,7 +1,10 @@
 package springcalculator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringCalculator {
 	
@@ -15,17 +18,70 @@ public class StringCalculator {
 	 * @return returns a String with any newlines removed and just numbers separated by given delimiter.
 	 */
 	private String checkSeperator(String string) {		
-		String trimmedString;		
+		Pattern regex = Pattern.compile("//(\\[(\\D+)])+\n(.*)");
+		Matcher match = regex.matcher(string);
+		
 		if (string.contains("//")) {
-			if(string.contains("[")) {
-				sep = string.substring(string.indexOf("[") + 1,string.indexOf("]"));
+			String s = "";
+			if(regex.matcher(string).matches()) {
+				StringBuilder sb = new StringBuilder();
+				
+				while(match.find()) {		
+					if(string.contains("][")) {
+						
+						String sepSplit  = "";						
+						String[] separator = match.group(2)
+								.replaceAll("\\]\\[",",")
+								.split(",");
+						StringBuilder multi = new StringBuilder();
+						for(int i = 0; i < separator.length; i++) {							
+							if(i == separator.length - 1) {								
+								sepSplit += "\\" + separator[i];								
+							} else if(separator[i].length() > 1) {								
+								for(int j = 0; j < separator[i].length(); j++) {									
+									multi.append("\\" + separator[i].charAt(j));	
+								}
+								sepSplit += multi.toString() + "|";
+							} else {								
+								sepSplit += "\\" + separator[i] + "|";
+							}							
+						}
+						System.out.println(sepSplit);
+						//create string with numbers and commas
+						String[] numbers = match.group(3).split(sepSplit);
+						
+						for(int i = 0; i < numbers.length;i++) {
+							if (i != numbers.length - 1) {								
+								sb.append(numbers[i] + ",");								
+							} else {								
+								sb.append(numbers[i]);
+							}
+						}
+						
+						//return new string
+						s = sb.toString();
+					} else {
+						
+						int lengthOfDelimitter = string.substring(string.indexOf("[") + 1, string.indexOf("]")).length();
+						String workingString = string.substring(string.indexOf("[") + 1, string.indexOf("]"));
+						
+						for(int i = 0; i < lengthOfDelimitter ;i++) {
+							
+							sb.append("\\" + workingString.charAt(i));
+						}
+						
+						sep = sb.toString();
+						s = string.substring(string.indexOf("\n") + 1);
+					}
+				}			
+				return s;
 			} else {
 				sep = string.substring(2,string.indexOf("\n"));
+				return string.substring(string.indexOf("\n") + 1);
 			}
-			System.out.println("New String = " + string.substring(string.indexOf("\n") + 1).replaceAll("\n", sep)  );
-			return trimmedString = "\\" + string.substring(string.indexOf("\n") + 1).replaceAll("\n", sep);
+			
 		} else {
-			return trimmedString = string.replaceAll("\n", sep);
+			return string.replaceAll("\n", sep);
 		}
 	}
 	
@@ -42,7 +98,7 @@ public class StringCalculator {
 			int sum = 0;
 						
 			String[] numbers = checkSeperator(string).split(sep);		
-			
+			//System.out.println(checkSeperator(string));
 			for(String number : numbers) {
 				if(Integer.parseInt(number) < 0) {
 					List<Integer> num = new ArrayList<>();

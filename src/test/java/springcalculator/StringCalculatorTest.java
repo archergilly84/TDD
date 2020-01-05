@@ -127,13 +127,43 @@ class StringCalculatorTest {
 	}
 	
 	@Test
-	void delimiterCanBeOfAnyLength_Test() {
+	void delimitterCanBeOfAnyLength_Test() {
 		//Act
 		StringCalculator stringCalculator = new StringCalculator();
 		//Arrange
 		int sum = stringCalculator.add("//[***]\n1***2***3");
 		//Assert
 		assertEquals(6,sum);		
+	}
+	
+	@Test
+	void twoDelimittersCanBeUsed_Test() {
+		//Act
+		StringCalculator stringCalculator = new StringCalculator();
+		//Arrange
+		int sum = stringCalculator.add("//[*][%]\n1*2%3");
+		//Assert
+		assertEquals(6,sum);	
+	}
+	
+	@Test
+	void multipleSeparateDelimittersCanBeUsed_Test() {
+		//Act
+		StringCalculator stringCalculator = new StringCalculator();
+		//Arrange
+		int sum = stringCalculator.add("//[*][%][^]\n1*2%3^4");
+		//Assert
+		assertEquals(10,sum);	
+	}
+	
+	@Test
+	void multipleDelimittersOfAnyLengthCanBeUsed_Test() {
+		//Act
+		StringCalculator stringCalculator = new StringCalculator();
+		//Arrange
+		int sum = stringCalculator.add("//[***][%][^]\n1^2%3***4");
+		//Assert
+		assertEquals(10,sum);	
 	}
 	
 	
